@@ -1,8 +1,7 @@
-﻿namespace WorldRank
+﻿namespace WorldRank;
+
+public interface IWalletRepository
 {
-    internal interface IWalletRepository
-    {
-        void Add(Wallet wallet, int playerId);
-        List<Wallet> GetByPlayer(int playerId);
-    }
+    void Add(Wallet wallet, int playerId);
+    List<Wallet> GetByPlayer(int playerId);
 }

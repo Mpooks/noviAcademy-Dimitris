@@ -1,23 +1,56 @@
-using System.Xml.Linq;
-using WorldRank;
+namespace WorldRank;
 
 public class Wallet
 {
     public decimal Balance { get; private set; }
-    public Currency Currency;
-    public bool IsBlocked;
+    public Currency Currency { get; }
+    public bool IsBlocked { get; private set; }
 
-    public Wallet(decimal balance, Currency currency, bool isBlocked)
+    public Wallet(Currency currency)
     {
-        Balance = balance;
+        Balance = 0;
         Currency = currency;
         IsBlocked = false;
     }
 
-    public void SetBalance(decimal balance)
+    public void Deposit(decimal amount)
     {
-        if (balance < 0) { return; }
-        Balance = balance;
+        if (IsBlocked)
+        {
+            throw new InvalidOperationException("The wallet is blocked.");
+        }
+
+        if (amount <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(amount), "The amount to be deposited should be positive.");
+        }
+
+        Balance += amount;
+    }
+
+    public void Withdraw(decimal amount)
+    {
+        if (IsBlocked)
+        {
+            throw new InvalidOperationException("The wallet is blocked.");
+        }
+
+        if (amount <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(amount), "The amount to be withdrawn needs to be positive.");
+        }
+
+        if (amount > Balance)
+        {
+            throw new InvalidOperationException("There are insufficient funds for the transaction to happen.");
+        }
+
+        Balance -= amount;
+    }
+
+    public void ToggleBlock()
+    {
+        IsBlocked = !IsBlocked;
     }
 
     public override string ToString()

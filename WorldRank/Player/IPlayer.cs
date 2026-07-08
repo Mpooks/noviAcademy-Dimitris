@@ -1,11 +1,9 @@
-﻿using WorldRank;
+﻿namespace WorldRank;
 
-namespace WorldRank
+public interface IPlayer
 {
-    public interface IPlayer
-    {
-        string Name { get; set; }
-        int Score { get; set; }
-        Dictionary <Currency, Wallet> Wallets  { get; set; }
-    }
+    int Id { get; }
+    string Name { get; }
+    int Score { get; }
+    IReadOnlyDictionary<Currency, Wallet> Wallets { get; }
 }

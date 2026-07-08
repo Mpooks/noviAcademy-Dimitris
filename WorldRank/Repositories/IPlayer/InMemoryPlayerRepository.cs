@@ -1,38 +1,49 @@
-﻿namespace WorldRank
+﻿namespace WorldRank;
+
+internal class InMemoryPlayerRepository : IPlayerRepository
 {
-    internal class InMemoryPlayerRepository : IPlayerRepository
+    private readonly List<Player> _players;
+    private int _nextId = 1;
+
+    public InMemoryPlayerRepository(List<Player> players)
     {
-        private List<Player> _players;
+        _players = players;
+    }
 
-        public InMemoryPlayerRepository(List<Player> players)
+    public void AddPlayer(Player player)
+    {
+        player.Id = _nextId++;
+        _players.Add(player);
+    }
+
+    public void DeletePlayer(int playerId)
+    {
+        var player = _players.FirstOrDefault(x => x.Id == playerId);
+
+        if (player != null)
         {
-            _players = players;
+            _players.Remove(player);
         }
+    }
 
-        public void AddPlayer(Player player)
-        {
-            _players.Add(player);
-        }
+    public Player? FindPlayer(int playerId)
+    {
+        return _players.FirstOrDefault(x => x.Id == playerId);
+    }
 
-        public void DeletePlayer(int playerId)
-        {
-            var player = _players.Where(x => x.Id == playerId).FirstOrDefault();
+    public Player? FindByName(string name)
+    {
+        return _players.FirstOrDefault(player =>
+            player.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+    }
 
-            if (player != null) _players.Remove(player);
-        }
+    public List<Player> GetAllPlayers()
+    {
+        return _players;
+    }
 
-        public Player? FindPlayer(int playerId)
-        {
-            var found = _players.Where(x => x.Id == playerId).FirstOrDefault();
-
-            return found;
-
-        }
-
-        public IEnumerable<IGrouping<int, Player>> GroupPlayersByScore()
-        {
-            return _players.GroupBy(player => player.Score);
-        }
-
+    public IEnumerable<IGrouping<int, Player>> GroupPlayersByScore()
+    {
+        return _players.GroupBy(player => player.Score);
     }
 }
