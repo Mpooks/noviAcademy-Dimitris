@@ -59,6 +59,15 @@ namespace WorldRank.Domain.Entities.Wallets
 			Balance = newBalance;
 		}
 
+		public void ForceSubtractFunds(decimal amount)
+		{
+
+            if (IsBlocked)
+                throw new WalletBlockedException(Currency);
+
+			Balance -= amount;
+        }
+
 		public override string ToString() => $"Balance -> {Balance} Currency -> {Currency} IsBlocked -> {IsBlocked}";
 	}
 }

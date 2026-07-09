@@ -4,8 +4,17 @@ using WorldRank.Domain.Entities.Exceptions;
 using WorldRank.Domain.Entities.Player;
 using WorldRank.Domain.Entities.Wallets;
 using WorldRank.Domain.Entities.Enums;
+using WorldRank.Application.Interfaces;
+using WorldRank.Infrastructure.Repositories;
+using Microsoft.Extensions.DependencyInjection;
+using WorldRank;
+using WorldRank.Infrastructure;
 
 var logger = LogManager.GetCurrentClassLogger();
+
+var services = new ServiceCollection();
+services.AddApplication();
+services.AddInfrastructure();
 
 //Wallets are stored in their own repository and reference the player via PlayerId
 IWalletRepository walletRepository = new InMemoryWalletRepository();

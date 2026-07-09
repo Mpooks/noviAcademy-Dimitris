@@ -1,7 +1,7 @@
 using WorldRank.Domain.Entities.Enums;
 using WorldRank.Domain.Entities.Wallets;
 
-namespace WorldRank.Domain
+namespace WorldRank.Application.Interfaces
 {
 	public interface IWalletRepository
 	{
@@ -14,8 +14,7 @@ namespace WorldRank.Domain
 		void Deposit(int playerId, Currency currency, decimal amount);
 
 		void Withdraw(int playerId, Currency currency, decimal amount);
-
-		void Block(int playerId, Currency currency);
+        void Block(int playerId, Currency currency);
 
 		void Unblock(int playerId, Currency currency);
 	}

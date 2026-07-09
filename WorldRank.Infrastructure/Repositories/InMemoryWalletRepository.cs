@@ -1,9 +1,10 @@
 using NLog;
+using WorldRank.Application.Interfaces;
 using WorldRank.Domain.Entities.Enums;
 using WorldRank.Domain.Entities.Wallets;
-using WorldRank.Domain.Exceptions;
+using WorldRank.Domain.Entities.Exceptions;
 
-namespace WorldRank.Domain
+namespace WorldRank.Infrastructure.Repositories
 {
 	public class InMemoryWalletRepository : IWalletRepository
 	{
