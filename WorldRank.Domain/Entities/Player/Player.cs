@@ -1,6 +1,4 @@
-using WorldRank.Console.Enums;
-
-namespace WorldRank.Console;
+namespace WorldRank.Domain.Entities.Player;
 
 public class Player : IPlayer
 {

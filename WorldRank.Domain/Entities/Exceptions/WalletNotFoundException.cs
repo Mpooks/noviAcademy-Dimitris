@@ -1,6 +1,6 @@
-using WorldRank.Console.Enums;
+using WorldRank.Domain.Entities.Enums;
 
-namespace WorldRank.Console.Exceptions
+namespace WorldRank.Domain.Entities.Exceptions
 {
 	public class WalletNotFoundException : WalletException
 	{

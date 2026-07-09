@@ -1,7 +1,7 @@
-using WorldRank.Console.Enums;
-using WorldRank.Console.Exceptions;
+using WorldRank.Domain.Entities.Exceptions;
+using WorldRank.Domain.Entities.Enums;
 
-namespace WorldRank.Console
+namespace WorldRank.Domain.Entities.Wallets
 {
 	public class Wallet : IWallet
 	{

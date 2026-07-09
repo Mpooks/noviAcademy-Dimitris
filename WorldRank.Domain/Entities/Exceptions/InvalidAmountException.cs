@@ -1,4 +1,4 @@
-namespace WorldRank.Console.Exceptions
+namespace WorldRank.Domain.Entities.Exceptions
 {
 	public class InvalidAmountException : WalletException
 	{
