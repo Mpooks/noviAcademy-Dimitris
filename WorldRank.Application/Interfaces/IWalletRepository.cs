@@ -17,5 +17,7 @@ namespace WorldRank.Application.Interfaces
         void Block(int playerId, Currency currency);
 
 		void Unblock(int playerId, Currency currency);
-	}
+
+        Wallet GetWallet(int playerId, Currency currency);
+    }
 }

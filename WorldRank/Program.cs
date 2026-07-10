@@ -9,6 +9,7 @@ using WorldRank.Infrastructure.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using WorldRank;
 using WorldRank.Infrastructure;
+using WorldRank.Application.Strategies;
 
 var logger = LogManager.GetCurrentClassLogger();
 
@@ -16,10 +17,13 @@ var services = new ServiceCollection();
 services.AddApplication();
 services.AddInfrastructure();
 
-//Wallets are stored in their own repository and reference the player via PlayerId
-IWalletRepository walletRepository = new InMemoryWalletRepository();
-IPlayerRepository playerRepository = new InMemoryPlayerRepository();
+var serviceProvider = services.BuildServiceProvider();
 
+//Wallets are stored in their own repository and reference the player via PlayerId
+IWalletRepository walletRepository = serviceProvider.GetRequiredService<IWalletRepository>();
+IPlayerRepository playerRepository = serviceProvider.GetRequiredService<IPlayerRepository>();
+IEnumerable<IFundsStrategy> fundsStrategies =
+    serviceProvider.GetRequiredService<IEnumerable<IFundsStrategy>>();
 logger.Info("Application started.");
 
 while (true)
@@ -40,6 +44,7 @@ while (true)
 	Console.WriteLine("11. Block wallet");
 	Console.WriteLine("12. Unblock wallet");
 	Console.WriteLine("13. Update wallet balance");
+	Console.WriteLine("14. Apply funds operation strategy");
 	Console.WriteLine("0. Exit");
 	Console.Write("> ");
 
@@ -58,6 +63,7 @@ while (true)
 		"11" => BlockWallet,
 		"12" => UnblockWallet,
 		"13" => UpdateWalletBalance,
+		"14" => ApplyFundsOperation,
 		"0" => null,
 		_ => () => Console.WriteLine("Unknown option.")
 	};
@@ -116,6 +122,19 @@ decimal? PromptAmount(string label)
 
 	Console.WriteLine("Amount must be a number.");
 	return null;
+}
+
+FundsOperation? PromptFundsOperation()
+{
+	Console.WriteLine("Choose an operation: 1-Add | 2-Subtract | 3-Force Subtract (balance may become negative)");
+
+	return Console.ReadLine() switch
+	{
+		"1" => FundsOperation.Add,
+		"2" => FundsOperation.Subtract,
+		"3" => FundsOperation.ForceSubtract,
+		_ => null
+	};
 }
 
 // Generates a random, unique player id (avoids collisions with already-registered players).
@@ -391,6 +410,43 @@ void UpdateWalletBalance()
 		walletRepository.UpdateBalance(playerId.Value, currency.Value, newBalance.Value);
 		Console.WriteLine("Balance updated.");
 	});
+}
+
+void ApplyFundsOperation()
+{
+    var playerId = PromptPlayerId();
+    if (playerId is null)
+        return;
+
+    var currency = PromptCurrency();
+    if (currency is null)
+        return;
+
+    var operation = PromptFundsOperation();
+    if (operation is null)
+        return;
+
+    var amount = PromptAmount("Amount");
+    if (amount is null)
+        return;
+
+    var strategy = fundsStrategies
+        .FirstOrDefault(strategy => strategy.Operation == operation.Value);
+
+    if (strategy is null)
+    {
+        Console.WriteLine("No strategy found for this operation.");
+        return;
+    }
+
+    RunWalletOperation(() =>
+    {
+        var wallet = walletRepository.GetWallet(playerId.Value, currency.Value);
+
+        strategy.Execute(wallet, amount.Value);
+
+        Console.WriteLine("Funds operation applied successfully.");
+    });
 }
 
 #endregion Wallet Methods
