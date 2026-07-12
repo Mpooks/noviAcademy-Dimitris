@@ -73,5 +73,10 @@ namespace WorldRank.Infrastructure.Repositories
 
 			return wallet;
 		}
+
+		public void SaveChanges()
+		{
+
+		}
 	}
 }
