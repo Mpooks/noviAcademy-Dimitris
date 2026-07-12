@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 using WorldRank.Infrastructure;
+using WorldRank.Application;
 
 namespace WorldRank
 {
