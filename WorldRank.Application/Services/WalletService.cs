@@ -208,6 +208,8 @@ namespace WorldRank.Application.Services
 
                 strategy.Execute(wallet, amount.Value);
 
+                _walletRepository.SaveChanges();
+
                 Console.WriteLine("Funds operation applied successfully.");
             });
         }

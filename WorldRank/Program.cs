@@ -9,8 +9,9 @@ var services = new ServiceCollection();
 services.AddWorldRank();
 
 using var serviceProvider = services.BuildServiceProvider();
-var playerService = serviceProvider.GetRequiredService<PlayerService>();
-var walletService = serviceProvider.GetRequiredService<WalletService>();
+using var scope = serviceProvider.CreateScope();
+var playerService = scope.ServiceProvider.GetRequiredService<PlayerService>();
+var walletService = scope.ServiceProvider.GetRequiredService<WalletService>();
 
 
 logger.Info("Application started.");

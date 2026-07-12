@@ -13,8 +13,9 @@ namespace WorldRank.Application
             services.AddSingleton<IFundsStrategy, AddFundsStrategy>();
             services.AddSingleton<IFundsStrategy, SubtractFundsStrategy>();
             services.AddSingleton<IFundsStrategy, ForceSubtractFundsStrategy>();
-            services.AddSingleton<PlayerService>();
-            services.AddSingleton<WalletService>();
+
+            services.AddScoped<PlayerService>();
+            services.AddScoped<WalletService>();
 
             return services;
         }
