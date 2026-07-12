@@ -5,10 +5,15 @@ namespace WorldRank.Domain.Entities.Wallets
 {
 	public class Wallet : IWallet
 	{
-		public Currency Currency { get; }
-		public int PlayerId { get; }
+		public int Id { get; private set; }
+		public Currency Currency { get; private set; }
+		public int PlayerId { get; private set; }
 		public decimal Balance { get; private set; }
 		public bool IsBlocked { get; private set; }
+
+		private Wallet()
+		{
+		}
 
 		public Wallet(int playerId, Currency currency, decimal balance, bool isBlocked = false)
 		{
