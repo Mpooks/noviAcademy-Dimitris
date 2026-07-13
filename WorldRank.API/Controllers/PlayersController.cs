@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using WorldRank.API.DTO.Players;
 using WorldRank.Application.Services;
-using WorldRank.Domain.Entities.Player;
 
 namespace WorldRank.API.Controllers
 {
@@ -16,40 +16,33 @@ namespace WorldRank.API.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
         {
-            try
-            {
-                var result = _playerService
-                    .ListPlayers()
-                    .ToList();
+            var players = await _playerService.ListPlayersAsync(cancellationToken);
+            var response = players.Select(PlayerResponse.FromPlayer).ToList();
 
-                if (result.Count == 0)
-                    return NotFound();
-
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            return Ok(response);
         }
 
         [HttpGet("{playerId:int}")]
-        public IActionResult GetPlayerById(int playerId)
+        public async Task<IActionResult> GetPlayerById(int playerId, CancellationToken cancellationToken)
         {
-            try
-            {
-                var result = _playerService.FindPlayerById(playerId);
-                if (result is null)
-                    return NotFound();
+            var result =await  _playerService.FindPlayerByIdAsync(playerId, cancellationToken);
+            if (result is null)
+                return NotFound();
+            var response = PlayerResponse.FromPlayer(result);
 
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            return Ok(response);
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] CreatePlayerRequest req, CancellationToken cancellationToken)
+        {
+            var id = await _playerService.AddPlayerAsync(req.Name, req.Score, cancellationToken);
+            var response = new PlayerResponse(id, req.Name, req.Score);
+
+            return CreatedAtAction(nameof(GetPlayerById), new { playerId = id }, response);
         }
     }
 }

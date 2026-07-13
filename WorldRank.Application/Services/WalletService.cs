@@ -26,59 +26,76 @@ namespace WorldRank.Application.Services
             _logger = logger;
         }
 
-        public void AddWalletToPlayer(int playerId, Currency currency, decimal startBalance)
+        public async Task<Wallet> AddWalletToPlayerAsync(int playerId,Currency currency,decimal startBalance,CancellationToken cancellationToken)
         {
-            if (_playerRepository.FindPlayer(playerId) is null)
+            var player = await _playerRepository.FindPlayerAsync(playerId,cancellationToken);
+            if (player is null)
+            {
                 throw new PlayerNotFoundException(playerId);
+            }
 
-            var wallet = new Wallet(playerId, currency, startBalance);
-            _walletRepository.Add(wallet);
+            var wallet = new Wallet(playerId,currency,startBalance);
+            await _walletRepository.AddAsync(wallet,cancellationToken);
+            return wallet;
         }
 
-        public List<Wallet> GetWalletsOfPlayer(int playerId)
+        public Task<List<Wallet>> GetWalletsOfPlayerAsync(int playerId, CancellationToken cancellationToken)
         {
-            return _walletRepository
-                .GetAllWalletsByPlayerId(playerId);
+            return _walletRepository.GetAllWalletsByPlayerIdAsync(playerId, cancellationToken);
         }
 
-        public void DepositToWallet(int playerId, Currency currency, decimal amount)
+        public Task<Wallet?> GetWalletByIdAsync(int walletId,CancellationToken cancellationToken)
         {
-            _walletRepository.Deposit(playerId, currency, amount);
+            return _walletRepository.GetWalletByIdAsync(walletId,cancellationToken);
         }
 
-        public void WithdrawFromWallet(int playerId, Currency currency, decimal amount)
+        public async Task<Wallet?> DepositToWalletAsync(int walletId,decimal amount,CancellationToken cancellationToken)
         {
-            _walletRepository.Withdraw(playerId, currency, amount);
+            var wallet = await _walletRepository.GetWalletByIdAsync(walletId,cancellationToken);
+
+            if (wallet is null) { return null; }
+            wallet.Deposit(amount); 
+            await _walletRepository.SaveChangesAsync(cancellationToken);
+
+            return wallet;
         }
 
-        public void BlockWallet(int playerId, Currency currency)
+        public Task WithdrawFromWalletAsync(int playerId, Currency currency, decimal amount, CancellationToken cancellationToken)
         {
-            _walletRepository.Block(playerId, currency);
+            return _walletRepository.WithdrawAsync(playerId, currency, amount, cancellationToken);
         }
 
-        public void UnblockWallet(int playerId, Currency currency)
+        public Task BlockWalletAsync(int playerId, Currency currency, CancellationToken cancellationToken)
         {
-            _walletRepository.Unblock(playerId, currency);
+            return _walletRepository.BlockAsync(playerId, currency, cancellationToken);
         }
 
-        public void UpdateWalletBalance(int playerId, Currency currency, decimal newBalance)
+        public Task UnblockWalletAsync(int playerId, Currency currency, CancellationToken cancellationToken)
         {
-            _walletRepository.UpdateBalance(playerId, currency, newBalance);
+           return _walletRepository.UnblockAsync(playerId, currency, cancellationToken);
         }
 
-        public void ApplyFundsOperation(int playerId, Currency currency, decimal amount, FundsOperation operation)
+        public Task UpdateWalletBalanceAsync(int playerId, Currency currency, decimal newBalance, CancellationToken cancellationToken)
         {
-            var strategy = _fundsStrategies
-                .FirstOrDefault(strategy => strategy.Operation == operation);
+            return _walletRepository.UpdateBalanceAsync(playerId, currency, newBalance, cancellationToken);
+        }
+
+        public async Task ApplyFundsOperationAsync(int playerId, Currency currency, decimal amount, FundsOperation operation, CancellationToken cancellationToken)
+        {
+            var strategy = _fundsStrategies.FirstOrDefault(strategy => strategy.Operation == operation);
             if (strategy is null)
             {
                 throw new InvalidOperationException(
                     $"No strategy registered for {operation}.");
             }
 
-            var wallet = _walletRepository.GetWallet(playerId, currency);
+            var wallet = await _walletRepository.GetWalletAsync(playerId, currency, cancellationToken);
+            if (wallet is null)
+            {
+                throw new WalletNotFoundException(playerId,currency);
+            }
             strategy.Execute(wallet, amount);
-            _walletRepository.SaveChanges();
+            await _walletRepository.SaveChangesAsync(cancellationToken);
 
             _logger.LogInformation(
                 "Applied {Strategy} to player {PlayerId} {Currency} wallet",

@@ -15,56 +15,66 @@ namespace WorldRank.Application.Services
             _cache = cache;
         }
 
-        public void AddPlayer(string name, int score)
+        public async Task<int> AddPlayerAsync(string name, int score, CancellationToken cancellationToken)
         {
-            var player = new Player(GeneratePlayerId(), name);
+            var id = await GeneratePlayerIdAsync(cancellationToken);
+
+            var player = new Player(id, name);
             player.AddScore(score);
-            _playerRepository.AddPlayer(player);
+
+            await _playerRepository.AddPlayerAsync(player, cancellationToken);
+
+            _cache.Remove("AllPlayersKey");
+
+            return id;
         }
 
-        public List<Player> ListPlayers()
+        public async Task<List<Player>> ListPlayersAsync(CancellationToken cancellationToken)
         {
             if (_cache.TryGetValue("AllPlayersKey", out List<Player>? cached) && cached is not null)
             {
                 return cached;
             }
-            var players = _playerRepository
-                .GetAllPlayers()
-                .ToList();
-
+            var players = await _playerRepository.GetAllPlayersAsync(cancellationToken);
             _cache.Set("AllPlayersKey", players, TimeSpan.FromSeconds(60));
 
             return players;
         }
 
-        public List<IGrouping<int, Player>> ListPlayersByScore()
+        public Task<List<IGrouping<int, Player>>> ListPlayersByScoreAsync(CancellationToken cancellationToken)
         {
-            return _playerRepository
-                .GroupPlayersByScore()
-                .ToList();
+            return _playerRepository.GroupPlayersByScoreAsync(cancellationToken);
         }
 
-        public Player? FindPlayerByName(string name)
+        public async Task<Player?> FindPlayerByNameAsync(string name, CancellationToken cancellationToken)
         {
 
-           return _playerRepository.GetAllPlayers()
-                .FirstOrDefault(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            var players = await ListPlayersAsync(cancellationToken);
+
+            return players.FirstOrDefault(player => player.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         }
 
-        public Player? FindPlayerById(int playerId)
+        public Task<Player?> FindPlayerByIdAsync(int playerId, CancellationToken cancellationToken)
         {
-            return _playerRepository.FindPlayer(playerId);
+            return _playerRepository.FindPlayerAsync(playerId, cancellationToken);
         }
 
-        public void DeletePlayer(int playerId)
+        public async Task DeletePlayerAsync(
+            int playerId,
+            CancellationToken cancellationToken)
         {
-            _playerRepository.DeletePlayer(playerId);
+            await _playerRepository.DeletePlayerAsync(
+                playerId,
+                cancellationToken);
+
+            _cache.Remove("AllPlayersKey");
         }
 
-        private int GeneratePlayerId()
+        private async Task<int> GeneratePlayerIdAsync(CancellationToken cancellationToken)
         {
-            var existingIds = _playerRepository
-                .GetAllPlayers()
+            var players = await _playerRepository.GetAllPlayersAsync(cancellationToken);
+
+            var existingIds = players
                 .Select(player => player.Id)
                 .ToHashSet();
 

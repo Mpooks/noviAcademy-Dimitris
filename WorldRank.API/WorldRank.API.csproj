@@ -19,9 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\WorldRank\nlog.config"
-          Link="nlog.config"
-          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\WorldRank\nlog.config" Link="nlog.config" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
