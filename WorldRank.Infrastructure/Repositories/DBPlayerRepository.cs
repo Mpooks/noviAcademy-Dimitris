@@ -2,6 +2,7 @@
 using WorldRank.Application.Interfaces;
 using WorldRank.Domain.Entities.Player;
 using WorldRank.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace WorldRank.Infrastructure.Repositories
 {
@@ -25,8 +26,7 @@ namespace WorldRank.Infrastructure.Repositories
 
         public IEnumerable<Player> GetAllPlayers()
         {
-            // Return a copy so callers cannot mutate the repository's internal list.
-            return _dbContext.Players.ToList();
+            return _dbContext.Players.AsNoTracking().ToList();
         }
 
         public void DeletePlayer(int playerId)
@@ -47,12 +47,13 @@ namespace WorldRank.Infrastructure.Repositories
 
         public Player? FindPlayer(int playerId)
         {
-            return _dbContext.Players.Where(item => item.Id == playerId).FirstOrDefault();
+            return _dbContext.Players.AsNoTracking().Where(item => item.Id == playerId).FirstOrDefault();
         }
 
         public IEnumerable<IGrouping<int, Player>> GroupPlayersByScore()
         {
             return _dbContext.Players
+                .AsNoTracking()
                 .ToList()
                 .GroupBy(player => player.Score)
                 .OrderByDescending(group => group.Key);

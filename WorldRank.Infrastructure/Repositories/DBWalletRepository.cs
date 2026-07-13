@@ -1,4 +1,5 @@
-﻿using NLog;
+﻿using Microsoft.EntityFrameworkCore;
+using NLog;
 using WorldRank.Application.Interfaces;
 using WorldRank.Domain.Entities.Enums;
 using WorldRank.Domain.Entities.Exceptions;
@@ -33,7 +34,7 @@ namespace WorldRank.Infrastructure.Repositories
 
         public List<Wallet> GetAllWalletsByPlayerId(int playerId)
         {
-            return _dbContext.Wallets.Where(item => item.PlayerId == playerId).ToList();
+            return _dbContext.Wallets.AsNoTracking().Where(item => item.PlayerId == playerId).ToList();
         }
 
         public void UpdateBalance(int playerId, Currency currency, decimal newBalance)
