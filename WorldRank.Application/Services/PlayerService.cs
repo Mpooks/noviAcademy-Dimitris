@@ -1,15 +1,18 @@
 ﻿using WorldRank.Application.Interfaces;
 using WorldRank.Domain.Entities.Player;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace WorldRank.Application.Services
 {
     public class PlayerService
     {
+        private readonly IMemoryCache _cache;
         private readonly IPlayerRepository _playerRepository;
 
-        public PlayerService(IPlayerRepository playerRepository)
+        public PlayerService(IPlayerRepository playerRepository, IMemoryCache cache)
         {
             _playerRepository = playerRepository;
+            _cache = cache;
         }
 
         public void AddPlayer(string name, int score)
@@ -21,9 +24,17 @@ namespace WorldRank.Application.Services
 
         public List<Player> ListPlayers()
         {
-            return _playerRepository
+            if (_cache.TryGetValue("AllPlayersKey", out List<Player>? cached) && cached is not null)
+            {
+                return cached;
+            }
+            var players = _playerRepository
                 .GetAllPlayers()
                 .ToList();
+
+            _cache.Set("AllPlayersKey", players, TimeSpan.FromSeconds(60));
+
+            return players;
         }
 
         public List<IGrouping<int, Player>> ListPlayersByScore()
