@@ -38,7 +38,7 @@ namespace WorldRank.API.Controllers
         }
 
         [HttpPost("{id:int}/deposit")]
-        public async Task<IActionResult> Deposit([FromBody] int id,[FromBody] DepositRequest req, CancellationToken cancellationToken)
+        public async Task<IActionResult> Deposit([FromRoute] int id,[FromBody] DepositRequest req, CancellationToken cancellationToken)
         {
             try {
                 var wallet = await _walletService.DepositToWalletAsync(id, req.Amount, cancellationToken);
@@ -47,14 +47,11 @@ namespace WorldRank.API.Controllers
                     return NotFound();
                 }
                 var response = WalletResponse.FromWallet(wallet);
-                return Ok(WalletResponse.FromWallet(wallet));
+                return Ok(response);
             }
             catch (WalletException exception)
             {
-                return BadRequest(new
-                {
-                    error = exception.Message
-                });
+                return BadRequest(exception.Message);
             }
         }
     }

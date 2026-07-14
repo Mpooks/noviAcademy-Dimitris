@@ -6,6 +6,7 @@ using WorldRank.Application.Services;
 using WorldRank.Application.Strategies;
 using WorldRank.Infrastructure.Data;
 using WorldRank.Infrastructure.Repositories;
+using WorldRank.Infrastructure.Caching;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,7 @@ builder.Services.AddScoped<WalletService>();
 // In-memory cache
 builder.Services.AddMemoryCache();
 
+builder.Services.AddSingleton<ICache, MemoryCacheStore>();
 builder.Services.AddSingleton<IFundsStrategy, AddFundsStrategy>();
 builder.Services.AddSingleton<IFundsStrategy, SubtractFundsStrategy>();
 builder.Services.AddSingleton<IFundsStrategy, ForceSubtractFundsStrategy>();

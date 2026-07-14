@@ -38,6 +38,20 @@ namespace WorldRank
             return null;
         }
 
+        public static int? PromptWalletId()
+        {
+            Console.Write("Give wallet id: ");
+
+            if (int.TryParse(Console.ReadLine(),out var walletId))
+            {
+                return walletId;
+            }
+
+            Console.WriteLine("Wallet id must be a whole number.");
+
+            return null;
+        }
+
         public static Currency? PromptCurrency()
         {
             Console.Write("Give Currency: 1 - EUR | 2 - USD\n");

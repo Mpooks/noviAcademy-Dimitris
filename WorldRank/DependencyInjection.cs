@@ -3,6 +3,8 @@ using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 using WorldRank.Infrastructure;
 using WorldRank.Application;
+using WorldRank.Application.Interfaces;
+using WorldRank.Infrastructure.Caching;
 
 namespace WorldRank
 {
@@ -19,6 +21,8 @@ namespace WorldRank
 
             services.AddApplication();
             services.AddInfrastructure();
+            services.AddMemoryCache();
+            services.AddSingleton<ICache, MemoryCacheStore>();
 
             return services;
         }
