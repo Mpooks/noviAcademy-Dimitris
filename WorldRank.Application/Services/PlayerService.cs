@@ -1,6 +1,6 @@
-﻿using WorldRank.Application.Interfaces;
+﻿using Microsoft.Extensions.Logging;
+using WorldRank.Application.Interfaces;
 using WorldRank.Domain.Entities.Player;
-using Microsoft.Extensions.Logging;
 
 namespace WorldRank.Application.Services
 {
@@ -28,8 +28,7 @@ namespace WorldRank.Application.Services
         {
             var id = await GeneratePlayerIdAsync(cancellationToken);
 
-            var player = new Player(id, name);
-            player.AddScore(score);
+            var player = Player.CreateNew(id,name,score);
 
             await _playerRepository.AddPlayerAsync(player, cancellationToken);
 
