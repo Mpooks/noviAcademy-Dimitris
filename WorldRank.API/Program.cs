@@ -11,6 +11,9 @@ using Autofac;
 using Microsoft.EntityFrameworkCore;
 using NLog.Extensions.Logging;
 using System.Text.Json.Serialization;
+using WorldRank.Gateway;
+using Quartz;
+using WorldRank.Application.Jobs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +24,7 @@ builder.Host.ConfigureContainer<ContainerBuilder>(container =>
     container.RegisterModule(new ApplicationModule());
     container.RegisterModule(new InfrastructureModule());
 });
+
 // Logging
 builder.Logging.ClearProviders();
 builder.Logging.AddNLog("nlog.config");
@@ -38,6 +42,20 @@ builder.Services.AddScoped<IWalletRepository, DBWalletRepository>();
 // Services
 builder.Services.AddScoped<PlayerService>();
 builder.Services.AddScoped<WalletService>();
+
+//Quartz & HttpClient
+builder.Services.AddHttpClient<IEcbHttpClient, EcbHTTPClient>();
+builder.Services.AddQuartz(q =>
+{
+    var jobKey = new JobKey(nameof(DataFetchJob));
+    q.AddJob<DataFetchJob>(jobKey);
+    q.AddTrigger(t => t
+    .ForJob(jobKey)
+    .WithIdentity($"{nameof(DataFetchJob)}-trigger")
+    .WithCronSchedule("0/5 * * * * ?"));
+});
+
+builder.Services.AddQuartzHostedService();
 
 // In-memory cache
 builder.Services.AddMemoryCache();
