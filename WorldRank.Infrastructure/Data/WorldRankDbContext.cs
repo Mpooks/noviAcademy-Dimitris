@@ -1,6 +1,7 @@
 ﻿using WorldRank.Domain.Entities.Wallets;
 using WorldRank.Domain.Entities.Player;
 using Microsoft.EntityFrameworkCore;
+using CurrencyRateE = WorldRank.Domain.Entities.CurrencyRates.CurrencyRates;
 
 namespace WorldRank.Infrastructure.Data
 {
@@ -12,6 +13,7 @@ namespace WorldRank.Infrastructure.Data
 
         public DbSet<Player> Players => Set<Player>();
         public DbSet<Wallet> Wallets => Set<Wallet>();
+        public DbSet<CurrencyRateE> CurrencyRates => Set<CurrencyRateE>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -41,6 +43,19 @@ namespace WorldRank.Infrastructure.Data
 
                 entity.Property(wallet => wallet.Currency)
                     .IsRequired();
+            });
+
+            modelBuilder.Entity<CurrencyRateE>(entity =>
+            {
+                entity.HasKey(r => new
+                {
+                    r.Currency,
+                    r.Date
+                });
+                    entity.Property(r => r.Currency).IsRequired().HasMaxLength(3);
+                    entity.Property(r => r.Date).IsRequired();
+                    entity.Property(r => r.Rate).IsRequired().HasPrecision(18, 6);
+
             });
         }
     }
