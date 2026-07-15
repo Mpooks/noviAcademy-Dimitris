@@ -15,42 +15,47 @@ namespace WorldRank.Infrastructure.Repositories
 			_players = new List<Player>();
 		}
 
-		public void AddPlayer(Player player)
+		public Task AddPlayerAsync(Player player, CancellationToken cancellationToken)
 		{
-			_players.Add(player);
-			_logger.Info("Player {PlayerId} ({Name}) added with score {Score}", player.Id, player.Name, player.Score);
-		}
+            cancellationToken.ThrowIfCancellationRequested();
 
-		public IEnumerable<Player> GetAllPlayers()
+            _players.Add(player);
+
+            return Task.CompletedTask;
+        }
+
+		public Task<List<Player>> GetAllPlayersAsync(CancellationToken cancellationToken)
 		{
-			// Return a copy so callers cannot mutate the repository's internal list.
-			return _players.ToList();
-		}
+            cancellationToken.ThrowIfCancellationRequested();
 
-		public void DeletePlayer(int playerId)
+            return Task.FromResult(_players.ToList());
+        }
+
+		public Task DeletePlayerAsync(int playerId, CancellationToken cancellationToken)
 		{
-			var player = _players.Where(item => item.Id == playerId).FirstOrDefault();
+            cancellationToken.ThrowIfCancellationRequested();
+            var player = _players.FirstOrDefault(item => item.Id == playerId);
 
-			if (player is null)
-			{
-				_logger.Warn("Delete skipped: player {PlayerId} not found", playerId);
-				return;
-			}
+            if (player is not null)
+                _players.Remove(player);
 
-			_players.Remove(player);
-			_logger.Info("Player {PlayerId} deleted", playerId);
-		}
+            return Task.CompletedTask;
+        }
 
-		public Player? FindPlayer(int playerId)
+		public Task<Player?> FindPlayerAsync(int playerId, CancellationToken cancellationToken)
 		{
-			return _players.Where(item => item.Id == playerId).FirstOrDefault();
-		}
+            cancellationToken.ThrowIfCancellationRequested();
+			Player? player = _players.FirstOrDefault(item => item.Id == playerId);
 
-		public IEnumerable<IGrouping<int, Player>> GroupPlayersByScore()
+			return Task.FromResult(player);
+        }
+
+		public Task<List<IGrouping<int, Player>>> GroupPlayersByScoreAsync(CancellationToken cancellationToken)
 		{
-			return _players
-				.GroupBy(player => player.Score)
-				.OrderByDescending(group => group.Key);
-		}
+            cancellationToken.ThrowIfCancellationRequested();
+            var groups = _players.GroupBy(player => player.Score).OrderByDescending(group => group.Key).ToList();
+
+            return Task.FromResult(groups);
+        }
 	}
 }

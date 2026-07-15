@@ -5,21 +5,20 @@ namespace WorldRank.Application.Interfaces
 {
 	public interface IWalletRepository
 	{
-		void Add(Wallet wallet);
+		Task AddAsync(Wallet wallet, CancellationToken cancellationToken);
 
-		List<Wallet> GetAllWalletsByPlayerId(int playerId);
+		Task<List<Wallet>> GetAllWalletsByPlayerIdAsync(int playerId, CancellationToken cancellationToken);
+        Task<Wallet?> GetWalletByIdAsync(int walletId, CancellationToken cancellationToken);
 
-		void UpdateBalance(int playerId, Currency currency, decimal newBalance);
+        Task UpdateBalanceAsync(int playerId, Currency currency, decimal newBalance, CancellationToken cancellationToken);
 
-		void Deposit(int playerId, Currency currency, decimal amount);
+		Task WithdrawAsync(int playerId, Currency currency, decimal amount, CancellationToken cancellationToken);
+        Task BlockAsync(int playerId, Currency currency, CancellationToken cancellationToken);
 
-		void Withdraw(int playerId, Currency currency, decimal amount);
-        void Block(int playerId, Currency currency);
+		Task UnblockAsync(int playerId, Currency currency, CancellationToken cancellationToken);
 
-		void Unblock(int playerId, Currency currency);
+        Task<Wallet?> GetWalletAsync(int playerId, Currency currency, CancellationToken cancellationToken);
 
-        Wallet GetWallet(int playerId, Currency currency);
-
-		void SaveChanges();
+		Task SaveChangesAsync(CancellationToken cancellationToken);
     }
 }
