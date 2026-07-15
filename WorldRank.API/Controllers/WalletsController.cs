@@ -1,11 +1,10 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using WorldRank.API.DTO.Wallets;
-using WorldRank.Application.Commands.Players;
 using WorldRank.Application.Commands.Wallets;
+using WorldRank.Application.Queries.Wallets;
 using WorldRank.Application.Services;
 using WorldRank.Domain.Entities.Exceptions;
-using WorldRank.Domain.Entities.Wallets;
 
 namespace WorldRank.API.Controllers
 {
@@ -13,19 +12,18 @@ namespace WorldRank.API.Controllers
     [Route("api/[controller]")]
     public class WalletsController : ControllerBase
     {
-        private readonly WalletService _walletService;
         private readonly IMediator _mediator;
 
-        public WalletsController(WalletService walletService, IMediator mediator)
+        public WalletsController(IMediator mediator)
         {
-            _walletService = walletService;
+
             _mediator = mediator;
         }
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetWalletById(int id, CancellationToken cancellationToken)
         {
-            var result = await  _walletService.GetWalletByIdAsync(id, cancellationToken);
+            var result = await _mediator.Send(new GetWalletByIdQuery(id), cancellationToken);
             if (result is null)
                 return NotFound();
             var response = WalletResponse.FromWallet(result);
@@ -58,7 +56,7 @@ namespace WorldRank.API.Controllers
         public async Task<IActionResult> Deposit([FromRoute] int id,[FromBody] DepositRequest req, CancellationToken cancellationToken)
         {
             try {
-                var wallet = await _walletService.DepositToWalletAsync(id, req.Amount, cancellationToken);
+                var wallet = await _mediator.Send(new DepositToWalletCommand(id, req.Amount), cancellationToken);
                 if (wallet is null)
                 {
                     return NotFound();

@@ -19,6 +19,10 @@ namespace WorldRank.Infrastructure
             builder.RegisterDecorator<GetAllPersistenceCachingDecorator, IGetAllPersistence>();
             builder.RegisterType<CreateWalletPersistence>().As<ICreateWalletPersistence>().InstancePerLifetimeScope();
             builder.RegisterDecorator<CreateWalletPersistenceCachingDecorator, ICreateWalletPersistence>();
+            builder.RegisterType<DepositToWalletPersistence>().As<IDepositToWalletPersistence>().InstancePerLifetimeScope();
+            builder.RegisterDecorator<DepositToWalletPersistenceCachingDecorator, IDepositToWalletPersistence>();
+            builder.RegisterType<GetWalletByIdPersistence>().As<IGetWalletByIdPersistence>().InstancePerLifetimeScope();
+            builder.RegisterDecorator<GetWalletByIdPersistenceCachingDecorator, IGetWalletByIdPersistence>();
         }
     }
 }
