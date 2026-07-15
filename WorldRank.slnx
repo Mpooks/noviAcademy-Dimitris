@@ -4,5 +4,4 @@
   <Project Path="WorldRank.Domain/WorldRank.Domain.csproj" Id="9d479848-7317-4b77-bb43-4808b7dffc85" />
   <Project Path="WorldRank.Gateway/WorldRank.Gateway.csproj" Id="a4dbcba6-83c0-4c5c-9e7b-fc6c668a52fb" />
   <Project Path="WorldRank.Infrastructure/WorldRank.Infrastructure.csproj" Id="7580fe3c-3d1b-4dcd-a005-4a87ead4bd15" />
-  <Project Path="WorldRank/WorldRank.csproj" />
 </Solution>
