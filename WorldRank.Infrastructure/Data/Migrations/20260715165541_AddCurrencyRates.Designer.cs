@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WorldRank.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using WorldRank.Infrastructure.Data;
 namespace WorldRank.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(WorldRankDbContext))]
-    partial class WorldRankDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260715165541_AddCurrencyRates")]
+    partial class AddCurrencyRates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

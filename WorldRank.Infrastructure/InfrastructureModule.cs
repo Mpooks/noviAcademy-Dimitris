@@ -3,6 +3,7 @@ using WorldRank.Application.Infrastructure;
 using WorldRank.Infrastructure.Persistence.Commands.Players;
 using WorldRank.Infrastructure.Persistence.Commands.Wallets;
 using WorldRank.Infrastructure.Persistence.Queries;
+using WorldRank.Infrastructure.Persistence.Commands.CurrencyRates;
 
 
 namespace WorldRank.Infrastructure
@@ -23,6 +24,7 @@ namespace WorldRank.Infrastructure
             builder.RegisterDecorator<DepositToWalletPersistenceCachingDecorator, IDepositToWalletPersistence>();
             builder.RegisterType<GetWalletByIdPersistence>().As<IGetWalletByIdPersistence>().InstancePerLifetimeScope();
             builder.RegisterDecorator<GetWalletByIdPersistenceCachingDecorator, IGetWalletByIdPersistence>();
+            builder.RegisterType<StoreCurrencyRatesPersistence>().As<IStoreCurrencyRatesPersistence>().InstancePerLifetimeScope();
         }
     }
 }

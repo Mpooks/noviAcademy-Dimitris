@@ -1,7 +1,6 @@
 using MediatR;
 using WorldRank.Application.Infrastructure;
 using WorldRank.Application.Interfaces;
-using WorldRank.Application.Services;
 using WorldRank.Domain.Entities.Player;
 
 namespace WorldRank.Application.Commands.Players

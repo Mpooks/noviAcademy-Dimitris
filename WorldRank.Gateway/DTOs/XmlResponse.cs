@@ -1,11 +1,10 @@
-﻿
-// NOTE: Generated code may require at least .NET Framework 4.5 or .NET Core/Standard 2.0.
+﻿namespace WorldRank.Gateway.DTOs;
 /// <remarks/>
 [System.SerializableAttribute()]
 [System.ComponentModel.DesignerCategoryAttribute("code")]
 [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://www.gesmes.org/xml/2002-08-01")]
-[System.Xml.Serialization.XmlRootAttribute(Namespace = "http://www.gesmes.org/xml/2002-08-01", IsNullable = false)]
-public partial class Envelope
+[System.Xml.Serialization.XmlRootAttribute("Envelope", Namespace = "http://www.gesmes.org/xml/2002-08-01", IsNullable = false)]
+public partial class XmlResponse
 {
 
     private string subjectField;

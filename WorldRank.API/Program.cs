@@ -11,9 +11,10 @@ using Autofac;
 using Microsoft.EntityFrameworkCore;
 using NLog.Extensions.Logging;
 using System.Text.Json.Serialization;
-using WorldRank.Gateway;
 using Quartz;
-using WorldRank.Application.Jobs;
+using WorldRank.API.Jobs;
+using WorldRank.Gateway.Clients;
+using WorldRank.Gateway;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,14 +45,14 @@ builder.Services.AddScoped<PlayerService>();
 builder.Services.AddScoped<WalletService>();
 
 //Quartz & HttpClient
-builder.Services.AddHttpClient<IEcbHttpClient, EcbHTTPClient>();
+builder.Services.AddGateway();
 builder.Services.AddQuartz(q =>
 {
-    var jobKey = new JobKey(nameof(DataFetchJob));
-    q.AddJob<DataFetchJob>(jobKey);
+    var jobKey = new JobKey(nameof(UpdateCurrencyRatesJob));
+    q.AddJob<UpdateCurrencyRatesJob>(jobKey);
     q.AddTrigger(t => t
     .ForJob(jobKey)
-    .WithIdentity($"{nameof(DataFetchJob)}-trigger")
+    .WithIdentity($"{nameof(UpdateCurrencyRatesJob)}-trigger")
     .WithCronSchedule("0/5 * * * * ?"));
 });
 

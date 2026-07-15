@@ -1,8 +1,7 @@
 ﻿using System.Xml.Serialization;
-using WorldRank.Application;
-using WorldRank.Application.Interfaces;
+using WorldRank.Gateway.DTOs;
 
-namespace WorldRank.Gateway
+namespace WorldRank.Gateway.Clients
 {
     public class EcbHTTPClient : IEcbHttpClient
     {
@@ -16,12 +15,13 @@ namespace WorldRank.Gateway
         public async Task<IReadOnlyList<CurrencyRateDto>> GetLatestRatesAsync(CancellationToken cancellationToken = default)
         {
             var response = await _httpClient.GetAsync("https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml", cancellationToken);
+            response.EnsureSuccessStatusCode();
 
             using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
 
-            var serializer = new XmlSerializer(typeof(Envelope));
+            var serializer = new XmlSerializer(typeof(XmlResponse));
 
-            var responseDTO = (Envelope)serializer.Deserialize(stream);
+            var responseDTO = (XmlResponse)serializer.Deserialize(stream);
             
             var cube = responseDTO.Cube.Cube1;
             
